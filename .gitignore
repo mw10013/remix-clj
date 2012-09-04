@@ -1,0 +1,11 @@
+/pom.xml
+*jar
+/lib
+/classes
+/native
+/.lein-failures
+/checkouts
+/.lein-deps-sum
+*.log
+remix_test_hsqldb.properties
+remix_test_hsqldb.script

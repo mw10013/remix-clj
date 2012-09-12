@@ -7,7 +7,7 @@ Mix and match libraries for web and sql.
 Simply add clj-sql-mapper as a dependency to your lein project:
 
 ```clojure
-[org.clojars.mw10013/remix "0.0.1"]
+[org.clojars.mw10013/remix "0.0.2"]
 ```
 ## License
 

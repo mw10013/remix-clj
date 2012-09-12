@@ -2,13 +2,6 @@
   "Validate a map with apologies to https://github.com/weavejester/valip")
 
 (defn- validate
-  "Validates the map m against the rule.
-   A rule is [key predicate error-string] or
-   [val-fn key predicate error-string].
-   If predicate fails returns {key [error] otherwise nil.
-
-   If key is a collection, the collection should contain rules
-   and the first invalid rule returns an error map."
   ([m rule]
      (if (-> rule first coll?)
        (->> rule (map (partial validate m)) (remove nil?) first)
@@ -20,7 +13,15 @@
 
 (defn invalid?
   "If the map m is invalid against rules, return a map of errors otherwise nil.
-   A rule is [key predicate error]. Error map is {key [error]"
+
+   A rule is vector having the following items:
+     [key predicate error]
+     [val-fn key predicate error]
+
+  A rule can also be a collection containing rules and the first invalid
+  rule gets into the error map.
+
+   Error map is {key [error]}"
   [m & rules]
   (->> rules
        (map (partial validate m))

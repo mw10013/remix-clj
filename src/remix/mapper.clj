@@ -11,8 +11,7 @@
      (fn [m] (if (nil? (m k)) m (update-in m [k] f))))
   ([f k & keys]
      (let [keys (conj keys k)]
-          (fn [m]
-            (reduce (fn [m k] (if (nil? (m k)) m (update-in m [k] f))) m keys)))))
+       (apply comp (map (partial make-mapping f) keys)))))
 
 (defn make-mappings
   "Takes a collection of keys and functions.

@@ -91,7 +91,9 @@
   :ks
     coll of keys to select into the result for matching rows.
   :mappings
-    mappings to apply against values of ks for result."
+    mappings to apply against values of ks for result.
+  :children
+    collection of template maps."
   [m rows]
   (:result (reduce reduce-row {:matchers (matchers m)} rows)))
 

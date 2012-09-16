@@ -73,7 +73,15 @@
     => {\"foo\" {\"bar\" \"baz\"}}
 
     {\"foo[]\" \"bar\"}
-    => {\"foo\" [\"bar\"]}"
+    => {\"foo\" [\"bar\"]}
+
+  Extends ring's nested key syntax by accepting parameter names as vectors of keys.
+  Keys may be keywords or integers, which will be treated as indexes into nested vectors.
+  If any level does exit, hash-maps and vectors will be created.
+
+  e.g.
+    {\"[:as 1 :bs 1 :cs 0 :id]\" \"1\"}
+    => {:as [nil {:bs [nil {:cs [{:id \"1\"}]}]}]}"
   [handler & [opts]]
   (fn [request]
     (let [parse   (:key-parser opts parse-nested-keys)

@@ -21,7 +21,9 @@
   [spec f]
   (assoc-in spec [:prepare-fn] f))
 
-(defn sql [spec & sqls]
+(defn sql
+  "Compile sqls and update into spec."
+  [spec & sqls]
   (update-in spec [:sql] (fnil conj []) (apply sql/sql sqls)))
 
 (defn generated-keys
@@ -46,7 +48,9 @@
                           (if (:connection-spec base) {:db base} base)) base-specs)]
     (apply merge base-specs)))
 
-(defmacro defspec [name base & body]
+(defmacro defspec
+  "Define a spec called name with base and body."
+  [name base & body]
   `(def ~name (-> ~base spec ~@body)))
 
 (defn- args->param-maps [{:keys [argkeys prepare-fn]} args]
@@ -82,7 +86,9 @@
             (if-let [transform-fn (:transform-fn spec)] (-> rs vec transform-fn) (vec rs))))
         args))
 
-(defmacro defselect [name spec & body]
+(defmacro defselect
+  "Define a select dbfn."
+  [name spec & body]
   `(let [spec# (-> ~spec spec ~@body)]
      (def ~name (partial select spec#))))
 
@@ -112,30 +118,44 @@
 
 (def insert do-prepared)
 
-(defmacro definsert [name spec & body]
+(defmacro definsert
+  "Define an insert dbfn."
+  [name spec & body]
   `(let [spec# (-> ~spec spec ~@body)]
      (def ~name (partial insert spec#))))
 
 (def update do-prepared)
 
-(defmacro defupdate [name spec & body]
+(defmacro defupdate
+  "Define an update dbfn."
+  [name spec & body]
   `(let [spec# (-> ~spec spec ~@body)]
      (def ~name (partial update spec#))))
 
 (def delete do-prepared)
 
-(defmacro defdelete [name spec & body]
+(defmacro defdelete
+  "Define a delete dbfn."
+  [name spec & body]
   `(let [spec# (-> ~spec spec ~@body)]
      (def ~name (partial delete spec#))))
 
-(defmacro sql-only [& body]
+(defmacro sql-only
+  "Return sql instead of executing dbfn."
+  [& body]
   `(binding [*exec-mode* :sql] ~@body))
 
-(defmacro keywords-only [& body]
+(defmacro keywords-only
+  "Return sql and keywords used, in order, instead of executing dbfn."
+  [& body]
   `(binding [*exec-mode* :keywords] ~@body))
 
-(defmacro keywords-only! [& body]
+(defmacro keywords-only!
+  "Return sql with keyword values interpolated in instead of executing dbfn."
+  [& body]
   `(binding [*exec-mode* :keywords!] ~@body))
 
-(defmacro spec-only [& body]
+(defmacro spec-only
+  "Return spec instead of executing dbfn."
+  [& body]
   `(binding [*exec-mode* :spec] ~@body))

@@ -2,12 +2,14 @@
 
 Mix and match libraries for web and sql.
 
+remix-site: http://stark-ravine-2309.herokuapp.com/
+
 ## Getting started
 
-Simply add clj-sql-mapper as a dependency to your lein project:
+Simply add remix as a dependency to your lein project:
 
 ```clojure
-[org.clojars.mw10013/remix "0.0.2"]
+[org.clojars.mw10013/remix "0.0.3"]
 ```
 ## License
 

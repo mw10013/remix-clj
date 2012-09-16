@@ -30,7 +30,7 @@
   (assoc-in spec [:generated-keys] ks))
 
 (defn transform
-  "Set function to be applied to restul set."
+  "Set function to be applied to result set."
   [spec f]
   (assoc-in spec [:transform-fn] f))
 

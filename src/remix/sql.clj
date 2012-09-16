@@ -29,7 +29,7 @@
    (coll? sql) sql
    :else (throw (IllegalArgumentException. (str "sql/compile-sql: " sql)))))
 
-(defn sql
+*(defn sql
   "Takes args of string, var, coll, and fns taking
    a parameter map argument.
 
@@ -136,10 +136,18 @@
   [k]
   `(fn [param-map#] (prepare-coll param-map# ~k)))
 
-(defn param-keys [m]
+(defn param-keys
+  "Returns keys in map m as compiled sql.
+   Used with param-vals to build insert sql.
+   (sql \"insert into fruit (\" param-keys \") values (\" param-vals \")\")"
+  [m]
   [(apply str (interpose \, (map jdbc/as-identifier (keys m))))])
 
-(defn param-vals [m]
+(defn param-vals
+  "Returns vals in map m as compiled sql.
+   Use with param-keys to build insert sql.
+   (sql \"insert into fruit (\" param-keys \") values (\" param-vals \")\")"
+  [m]
   (reduce (fn [prep-sql x]
             (if (keyword? x)
               (prepare-keyword prep-sql m x)

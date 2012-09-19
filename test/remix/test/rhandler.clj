@@ -17,6 +17,12 @@
     (is (= "name-no-method" (name-no-method {})))
     (is (= "name-and-method" (name-and-method {})))))
 
+(deftest rh-ns-prefix
+  (reset! rh/routes {})
+  (let [require-handler (fn [_] "require-handler")
+        handler (rh/wrap-rhandler identity "remix.test.slow-namespace" require-handler)]
+    (is (= "require-handler" (handler {})))))
+
 (deftest redefine-rh
   (reset! rh/routes {})
   (let [handler (rh/wrap-rhandler identity)]

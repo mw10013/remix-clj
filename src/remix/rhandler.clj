@@ -5,18 +5,29 @@
 
 (defonce ^{:doc "Routes and handlers defined by defrh."} routes (atom {}))
 
+(defn- require-namespaces [prefix]
+  (when prefix
+    (doseq [ns (namespaces-on-classpath :prefix prefix)]
+      (require ns)))
+  true)
+
 (defn wrap-rhandler
   "Middleware that dispatches requests to handlers defined by defrh.
    If there is no matching handler, the handler argument is called.
-   Also takes ns-syms and requires them and their children."
-  [handler & ns-syms]
-  (doseq [sym ns-syms
-          f (namespaces-on-classpath :prefix (name sym))]
-    (require f))
-  (fn [req]
-    (if-let [resp (some (fn [[_ h]] (h req)) @routes)]
-      resp
-      (handler req))))
+
+   ns-prefix is an optional string. All namespaces with that prefix
+   will be required by a future. While the future is not yet realized,
+   an optional require-handler will be called."
+  ([handler] (wrap-rhandler handler nil))
+  ([handler ns-prefix] (wrap-rhandler handler ns-prefix nil))
+  ([handler ns-prefix require-handler]
+     (let [f (future (require-namespaces ns-prefix))]
+       (fn [req]
+         (if (and (realized? f) @f)
+           (if-let [resp (some (fn [[_ h]] (h req)) @routes)]
+             resp
+             (handler req))
+           (and require-handler (require-handler req)))))))
 
 (defn route->key [method route]
   (->> (if (string? route) [route] route) (list* method) (clojure.string/join \space)))

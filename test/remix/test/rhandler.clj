@@ -20,8 +20,10 @@
 (deftest rh-ns-prefix
   (reset! rh/routes {})
   (let [require-handler (fn [_] "require-handler")
-        handler (rh/wrap-rhandler identity "remix.test.slow-namespace" require-handler)]
-    (is (= "require-handler" (handler {})))))
+        handler (rh/wrap-rhandler identity  require-handler "remix.slowpoke")]
+    (is (= "require-handler" (handler {})))
+    (require 'remix.slowpoke)
+    (is (= {} (handler {})))))
 
 (deftest redefine-rh
   (reset! rh/routes {})
@@ -47,4 +49,4 @@
     (rh/defrh rh-handler ["/rh-handler/:id"  :id #"\d+"] [id] (str "rh-handler-redefined: " id))
     (is (= "rh-handler-redefined: 1" (:body (handler (request :get "/rh-handler/1")))))))
 
-; (run-tests 'remix.test.rhandler)
+;(run-tests 'remix.test.rhandler)

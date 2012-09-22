@@ -8,32 +8,33 @@
 (defn- require-namespaces [prefixes]
   (doseq [prefix prefixes
           ns (namespaces-on-classpath :prefix prefix)]
-    (require ns))
+    (require ns :verbose))
   true)
+
+(defn- dispatch-request [wrapped-handler req]
+  (if-let [resp (some (fn [[_ h]] (h req)) @routes)]
+    resp
+    (wrapped-handler req)))
 
 (defn wrap-rhandler
   "Middleware that dispatches requests to handlers defined by defrh.
    If there is no matching handler, the handler argument is called.
 
-   ns-prefix is an optional string. All namespaces with that prefix
-   will be required by a future. While the future is not yet realized,
-   an optional require-handler will be called."
+   ns-prefixes are optional strings. All namespaces for these
+   prefixes are required. If require-handler, a ring handler,
+   is not nil, the namespaces will be required in a future and the
+   require-handler will handle requests until they are all loaded."
   ([handler] (wrap-rhandler handler (constantly nil)))
   ([handler require-handler & ns-prefixes]
      (if require-handler
        (let [f (future (require-namespaces ns-prefixes))]
          (fn [req]
            (if (and (realized? f) @f)
-             (if-let [resp (some (fn [[_ h]] (h req)) @routes)]
-               resp
-               (handler req))
+             (dispatch-request handler req)
              (require-handler req))))
        (do
          (require-namespaces ns-prefixes)
-         (fn [req]
-           (if-let [resp (some (fn [[_ h]] (h req)) @routes)]
-               resp
-               (handler req)))))))
+         (partial dispatch-request handler)))))
 
 (defn route->key [method route]
   (->> (if (string? route) [route] route) (list* method) (clojure.string/join \space)))

@@ -47,7 +47,7 @@
   (let [require-handler (fn [_] "require-handler")
         handler (rh/wrap-rhandler identity  require-handler "remix.slow")]
     (is (= "require-handler" (handler {})))
-    (Thread/sleep 4000)    
+    (Thread/sleep 3000)    
     (require 'remix.slow.slowpoke :verbose)
     (is (= {} (handler {})))))
 

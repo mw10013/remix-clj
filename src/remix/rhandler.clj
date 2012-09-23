@@ -8,7 +8,7 @@
 (defn- require-namespaces [prefixes]
   (doseq [prefix prefixes
           ns (namespaces-on-classpath :prefix prefix)]
-    (require ns :verbose))
+    (require ns))
   true)
 
 (defn- dispatch-request [wrapped-handler req]

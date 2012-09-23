@@ -24,7 +24,7 @@
    prefixes are required. If require-handler, a ring handler,
    is not nil, the namespaces will be required in a future and the
    require-handler will handle requests until they are all loaded."
-  ([handler] (wrap-rhandler handler (constantly nil)))
+  ([handler] (wrap-rhandler handler nil))
   ([handler require-handler & ns-prefixes]
      (if require-handler
        (let [f (future (require-namespaces ns-prefixes))]

@@ -18,20 +18,20 @@
 
 (defn wrap-rhandler
   "Middleware that dispatches requests to handlers defined by defrh.
-   If there is no matching handler, the handler argument is called.
+   If there is no matching defrh handler, the handler argument is called.
 
    ns-prefixes are optional strings. All namespaces for these
-   prefixes are required. If require-handler, a ring handler,
+   prefixes are required. If load-handler, a ring handler,
    is not nil, the namespaces will be required in a future and the
-   require-handler will handle requests until they are all loaded."
+   load-handler will handle requests until they are all loaded."
   ([handler] (wrap-rhandler handler nil))
-  ([handler require-handler & ns-prefixes]
-     (if require-handler
+  ([handler load-handler & ns-prefixes]
+     (if load-handler
        (let [f (future (require-namespaces ns-prefixes))]
          (fn [req]
            (if (and (realized? f) @f)
              (dispatch-request handler req)
-             (require-handler req))))
+             (load-handler req))))
        (do
          (require-namespaces ns-prefixes)
          (partial dispatch-request handler)))))

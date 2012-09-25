@@ -2,14 +2,14 @@
 
 Mix and match libraries for web and sql.
 
-remix-site: http://stark-ravine-2309.herokuapp.com/
+remix site: http://remix-clojure.herokuapp.com/
 
 ## Getting started
 
 Simply add remix as a dependency to your lein project:
 
 ```clojure
-[org.clojars.mw10013/remix "0.0.3"]
+[org.clojars.mw10013/remix "0.0.4"]
 ```
 ## License
 

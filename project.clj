@@ -1,4 +1,4 @@
-(defproject remix "0.0.6"
+(defproject remix "0.0.5"
   :description "Mix and match machinery for web and sql."
   :dependencies [[org.clojure/clojure "1.3.0"]
                  [org.clojure/core.incubator "0.1.1"]

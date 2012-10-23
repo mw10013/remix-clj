@@ -12,9 +12,7 @@
                                              :fields #(clojure.string/replace % \- \_)}}))
 
 (defn- db-fixture [t]
-  (def db (db/create-db {:datasource-spec {:classname "org.hsqldb.jdbcDriver"
-                                        :subprotocol "hsqldb"
-                                        :subname "remix_test_hsqldb"}
+  (def db (db/create-db {:datasource-spec "hsql//localhost/remix_test_hsqldb"
                       :pool-spec {:idle-time-excess-in-sec (* 15 60)
                                   :idle-time (* 30 60)}
                       :naming-strategy {:keys #(-> % clojure.string/lower-case (clojure.string/replace \_ \-))

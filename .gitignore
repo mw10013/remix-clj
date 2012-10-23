@@ -6,6 +6,8 @@
 /.lein-failures
 /checkouts
 /.lein-deps-sum
+/.lein-env
+/target
 *.log
 remix_test_hsqldb.properties
 remix_test_hsqldb.script

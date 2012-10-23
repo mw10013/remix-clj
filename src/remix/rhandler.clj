@@ -61,5 +61,8 @@
     (if fn-name
       `(do
          (defn ~fn-name [req#] (compojure.core/let-request [~bindings req#] ~@body))
-         (swap! routes assoc ~k (~method ~route ~bindings #(~fn-name %))))
-      `(swap! routes assoc ~k (~method ~route ~bindings ~@body)))))
+         (swap! routes assoc ~k (~method ~route ~bindings #(~fn-name %)))
+         nil)
+      `(do
+         (swap! routes assoc ~k (~method ~route ~bindings ~@body))
+         nil))))

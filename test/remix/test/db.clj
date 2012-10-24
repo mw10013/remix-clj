@@ -12,6 +12,7 @@
   (let [db (db/create-db {:datasource-spec "hsql//localhost/remix_test_hsqldb"})]
     (is db)
     (db/destroy-db db))
-  )
+  (let [db (db/create-db {:datasource-spec "jdbc:hsql//localhost/remix_test_hsqldb"})]
+    (is db)
+    (db/destroy-db db)))
 
-; (run-tests 'remix.test.db)

@@ -52,17 +52,18 @@
   "Reduce r into m using the :matches in m."
   [m r]
   (reduce
-   (fn [m {path ::path :keys [match-val-fn ks mappings]}]
+   (fn [m {path ::path :keys [match-val-fn ks mappings transform-fn]}]
      (let [v (match-val-fn r)
            match-path (list* :matches path)]
        (if (= v (get-in m (concat match-path [::v])))
          m
          (if (nil? v)
            (dissoc-in m match-path)
-           (-> m
-               (assoc-in match-path {::v v})
-               (update-in (result-path m path) (fnil conj [])
-                          (apply-mappings mappings (select-keys r ks))))))))
+           (let [transform-fn (or transform-fn (partial apply-mappings mappings))]
+             (-> m
+                 (assoc-in match-path {::v v})
+                 (update-in (result-path m path) (fnil conj [])
+                            (transform-fn (select-keys r ks)))))))))
    m (:matchers m)))
 
 (defn- matchers
@@ -90,8 +91,11 @@
     fn to match against a row.
   :ks
     coll of keys to select into the result for matching rows.
-  :mappings
+  :transform-fn
+     fn transforming a map of ks for result.
+  :mappings (deprecated)
     mappings to apply against values of ks for result.
+    Ignored if transform-fn exists.
   :children
     collection of template maps."
   [m rows]
@@ -105,7 +109,12 @@
   
   (println (reduce-rows {:row-key :as :match-val-fn :a :ks [:a]
                          :children [{:row-key :bs :match-val-fn :b :ks [:b]}
-                                    {:row-key :cs :match-val-fn :c :ks [:c]}]}
+                                    {:row-key :cs :match-val-fn :c :ks [:c] :mappings [(make-mapping inc :c)]}]}
+                        [{:a 1 :b 1} {:a 1 :b 2} {:a 2 :b 1} {:a 2 :c 3}]))
+
+  (println (reduce-rows {:row-key :as :match-val-fn :a :ks [:a]
+                         :children [{:row-key :bs :match-val-fn :b :ks [:b]}
+                                    {:row-key :cs :match-val-fn :c :ks [:c] :transform-fn (partial apply-mappings [(make-mapping inc :c)])}]}
                         [{:a 1 :b 1} {:a 1 :b 2} {:a 2 :b 1} {:a 2 :c 3}]))
   
   (apply-mappings [(fn [m] (update-in m [:a] inc))] {:a 1})

@@ -56,14 +56,16 @@
 
 (deftest reduce-rows-with-mappings
   (is (=  {:as [{:a 2 :b 1}]} (mpr/reduce-rows {:row-key :as :match-val-fn :a :ks [:a :b]
-                                                :mappings [(mpr/make-mapping inc :a)]} [{:a 1 :b 1}])))
+                                                :transform-fn (partial mpr/apply-mappings [(mpr/make-mapping inc :a)])}
+                                               [{:a 1 :b 1}])))
   (is (=  {:as [{:a 2 :b 2}]} (mpr/reduce-rows {:row-key :as :match-val-fn :a :ks [:a :b]
-                                                :mappings (mpr/make-mappings [:a :b] inc)} [{:a 1 :b 1}])))
+                                                :transform-fn (partial mpr/apply-mappings (mpr/make-mappings [:a :b] inc))}
+                                               [{:a 1 :b 1}])))
   (is (=  {:as [{:a 1 :bs [{:b 2 :cs [{:c 4}]}]} {:a 2 :bs [{:b 2 :cs [{:c 4}]}]}]}
           (mpr/reduce-rows {:row-key :as :match-val-fn :a :ks [:a]
                             :children [{:row-key :bs :match-val-fn :b :ks [:b]
                                         :children [{:row-key :cs :match-val-fn :c :ks [:c]
-                                                    :mappings [(mpr/make-mapping inc :c)]}]}]}
+                                                    :transform-fn (partial mpr/apply-mappings [(mpr/make-mapping inc :c)])}]}]}
                            [ {:a 1 :b 2 :c 3} {:a 2 :b 2 :c 3} ]))))
 
 #_(run-tests)

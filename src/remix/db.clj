@@ -49,7 +49,9 @@
     (let [^String msg (format "datasource-spec %s is missing a required parameter" spec)]
       (throw (IllegalArgumentException. msg)))))
 
-(defn create-db [{:keys [datasource-spec pool-spec naming-strategy]}]
+(defn- connection-spec
+  "Return connection spec for given db-spec."
+  [{:keys [datasource-spec pool-spec]}]
   (let [datasource-spec (prepare-datasource-spec datasource-spec)
         cpds (doto (ComboPooledDataSource.)
                (.setDriverClass (:classname datasource-spec))
@@ -59,11 +61,16 @@
                (.setMaxIdleTimeExcessConnections (or (:max-idle-time-excess-in-sec pool-spec)
                                                      (* 15 60)))
                (.setMaxIdleTime (or (:max-idle-time-in-sec pool-spec) (* 30 60))))]
-    {:connection-spec {:datasource cpds}
-     :naming-strategy naming-strategy}))
+    {:datasource cpds}))
+
+(defn create-db
+  "Create db from db-spec. Connection-spec is in delay for compilation."
+  [db-spec]
+  {:connection-spec (delay (connection-spec db-spec))
+   :naming-strategy (:naming-strategy db-spec)})
 
 (defn destroy-db [db]
-  (when-let [datasource (-> db :connection-spec :datasource)]
+  (when-let [datasource (-> db :connection-spec deref :datasource)]
     (com.mchange.v2.c3p0.DataSources/destroy datasource)))
 
 (defn with-db*
@@ -73,7 +80,7 @@
   (if (jdbc/find-connection)
     (f)
     (jdbc/with-naming-strategy (:naming-strategy db)
-      (jdbc/with-connection (:connection-spec db)
+      (jdbc/with-connection (-> db :connection-spec deref)
         (f)))))
 
 (defmacro with-db

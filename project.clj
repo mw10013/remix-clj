@@ -1,4 +1,4 @@
-(defproject org.clojars.mw10013/remix "0.0.6"
+(defproject org.clojars.mw10013/remix "0.0.7"
   :description "Mix and match machinery for web and sql."
   :url "https://github.com/mw10013/remix"
   :license {:name "Eclipse Public License - v 1.0"

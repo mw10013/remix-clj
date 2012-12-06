@@ -1,11 +1,28 @@
 (ns remix.bootstrap
   "Functions for twitter bootstrap."
-  (:use [hiccup [core :only [html]] [def :only [defhtml]] [form :only [label]]]))
+  (:use [hiccup [core :only [html]] [def :only [defhtml defelem]] [form :only [label]]]))
 
-(defhtml alert [m]
+(defhtml alert- [m]
   (let [m (if (string? m) {:content m :class :alert-info} m)]
     [:div {:class (->> m :class name (str "alert "))}
      (:content m)]))
+
+(defelem alert- [& content]
+  (->> content
+       (concat [:div {:class :alert}
+                [:button.close {:type :button :data-dismiss :alert} "x"]])
+       vec))
+
+(defhtml alert [& content]
+  (let [x (apply alert- content)]
+    (if (-> x second map?)
+      (update-in x [1 :class] (fnil (comp (partial str "alert ") name) ""))
+      x)))
+
+(defmacro alert [& content]
+  (let [[attrs content] (if (map? (first content)) content (conj content {}))
+        attrs (update-in attrs [:class] (partial str "alert "))]
+    `[:div ~attrs ~@content]))
 
 (defmacro control-group [k label errors & body]
   `[(if (~k ~errors) :div.control-group.error :div.control-group)

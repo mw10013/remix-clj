@@ -14,19 +14,19 @@
   (update-in (apply alert- content) [1 :class] (fnil (comp (partial str "alert ") name) "")))
 
 (defn control-error
-  "Takes coll of errors and joins them together in inline help."
-  [coll]
-  (when (not-empty coll) [:span.help-inline (clojure.string/join \space coll)]))
+  "Take coll of errors and join them together in inline help."
+  [errors]
+  (when (not-empty errors) [:span.help-inline (clojure.string/join \space errors)]))
  
 (defn control-group*
-  "Take html for label, control, and help along with error coll
+  "Take html for label, control, and help along with coll of errors
    and return html for control group."
-  [label-html control-html help-html error-coll]
-  [(if (empty? error-coll) :div.control-group :div.control-group.error)
+  [label-html control-html help-html errors]
+  [(if (empty? errors) :div.control-group :div.control-group.error)
    label-html
    [:div.controls
     control-html
-    (control-error error-coll)
+    (control-error errors)
     help-html]])
  
 (defn control-group-label

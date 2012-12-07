@@ -2,34 +2,16 @@
   "Functions for twitter bootstrap."
   (:use [hiccup [core :only [html]] [def :only [defhtml defelem]] [form :only [label]]]))
 
-(defhtml alert- [m]
-  (let [m (if (string? m) {:content m :class :alert-info} m)]
-    [:div {:class (->> m :class name (str "alert "))}
-     (:content m)]))
-
 (defelem alert- [& content]
   (->> content
-       (concat [:div {:class :alert}
+       (concat [:div {} ; empty map needed as placeholder
                 [:button.close {:type :button :data-dismiss :alert} "x"]])
        vec))
 
-(defhtml alert [& content]
-  (let [x (apply alert- content)]
-    (if (-> x second map?)
-      (update-in x [1 :class] (fnil (comp (partial str "alert ") name) ""))
-      x)))
-
-(defmacro alert [& content]
-  (let [[attrs content] (if (map? (first content)) content (conj content {}))
-        attrs (update-in attrs [:class] (partial str "alert "))]
-    `[:div ~attrs ~@content]))
-
-(defmacro control-group [k label errors & body]
-  `[(if (~k ~errors) :div.control-group.error :div.control-group)
-    (label {:class :control-label :for ~k} ~k ~label)
-    [:div.controls
-     ~@body
-     (when (~k ~errors) [:span.help-inline (join \space (~k ~errors))])]])
+(defhtml alert
+  "Return alert html for content. The first arg may be a map of attributes."
+  [& content]
+  (update-in (apply alert- content) [1 :class] (fnil (comp (partial str "alert ") name) "")))
 
 (defn control-error
   "Takes coll of errors and joins them together in inline help."
@@ -37,8 +19,8 @@
   (when (not-empty coll) [:span.help-inline (clojure.string/join \space coll)]))
  
 (defn control-group*
-  "Takes html for label, control, and help along with error coll
-   and returns html for control group."
+  "Take html for label, control, and help along with error coll
+   and return html for control group."
   [label-html control-html help-html error-coll]
   [(if (empty? error-coll) :div.control-group :div.control-group.error)
    label-html
@@ -47,11 +29,15 @@
     (control-error error-coll)
     help-html]])
  
-(defn control-group-label [k text]
+(defn control-group-label
+  "Return control-label html for text."
+  [k text]
   (label {:class :control-label} k text))
  
 (defmacro control-group
-  "Returns html for a control group."
+  "Return html for a control group with a control-label label.
+   Errors is a map. If k has an entry in errors, the corresponding errors are
+   displayed as help-inline."
   [k label error-map & body]
   `(control-group*
     (control-group-label ~k ~label)

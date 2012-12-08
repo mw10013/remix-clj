@@ -13,6 +13,11 @@
   [& content]
   (update-in (apply alert- content) [1 :class] (fnil (comp (partial str "alert ") name) "")))
 
+(defn alert
+  "Return alert html for content. The first arg may be a map of attributes."
+  [& content]
+  (update-in (apply alert- content) [1 :class] (fnil (comp (partial str "alert ") name) "")))
+
 (defn control-error
   "Take coll of errors and join them together in inline help."
   [errors]

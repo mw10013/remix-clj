@@ -24,31 +24,31 @@
   (when (not-empty errors) [:span.help-inline (clojure.string/join \space errors)]))
  
 (defn control-group*
-  "Take html for label, control, and help along with coll of errors
-   and return html for control group."
-  [label-html control-html help-html errors]
+  "Take hiccup for label, control, and help along with coll of errors
+   and return hiccup for control group."
+  [label control help errors]
   [(if (empty? errors) :div.control-group :div.control-group.error)
-   label-html
+   label
    [:div.controls
-    control-html
+    control
     (control-error errors)
-    help-html]])
+    help]])
  
 (defn control-group-label
-  "Return control-label html for text."
+  "Return control-label hiccup for text."
   [k text]
   (label {:class :control-label} k text))
  
 (defmacro control-group
-  "Return html for a control group with a control-label label.
+  "Return hiccup for a control group with a control-label label.
    Errors is a map. If k has an entry in errors, the corresponding errors are
    displayed as help-inline."
-  [k label error-map & body]
+  [k label errors & body]
   `(control-group*
     (control-group-label ~k ~label)
-    (html ~@body) nil (~k ~error-map)))
+    (html ~@body) nil (~k ~errors)))
  
 (defmacro control-actions
-  "Return html for control actions eg. Submit button."
+  "Return hiccup for control actions eg. Submit button."
   [& body]
   `[:div.control-group [:div.controls (html ~@body)]])

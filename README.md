@@ -9,7 +9,7 @@ remix site: http://remix-clojure.herokuapp.com/
 Simply add remix as a dependency to your lein project:
 
 ```clojure
-[org.clojars.mw10013/remix "0.0.7"]
+[org.clojars.mw10013/remix "0.0.8"]
 ```
 ## License
 
